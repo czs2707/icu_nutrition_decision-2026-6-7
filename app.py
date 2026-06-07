@@ -403,11 +403,23 @@ def main():
             
             # 概率分布
             st.markdown("### 概率分布")
+            import altair as alt
             prob_df = pd.DataFrame({
                 '风险等级': ['低风险', '中风险', '高风险'],
                 '概率': probabilities
             })
-            st.bar_chart(prob_df.set_index('风险等级'), color=['#28a745', '#ffc107', '#dc3545'])
+            prob_df['颜色'] = ['低风险', '中风险', '高风险']
+            color_scale = alt.Scale(
+                domain=['低风险', '中风险', '高风险'],
+                range=['#28a745', '#ffc107', '#dc3545']
+            )
+            chart = alt.Chart(prob_df).mark_bar(size=50).encode(
+                x=alt.X('风险等级:N', sort=['低风险', '中风险', '高风险']),
+                y=alt.Y('概率:Q', scale=alt.Scale(domain=[0, 1]), axis=alt.Axis(format='.0%')),
+                color=alt.Color('颜色:N', scale=color_scale, legend=None),
+                tooltip=['风险等级', alt.Tooltip('概率:Q', format='.2%')]
+            ).properties(height=300)
+            st.altair_chart(chart, use_container_width=True)
         
         with col2:
             nrs2002 = patient_data['NRS2002_Score']

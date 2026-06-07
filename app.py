@@ -12,7 +12,11 @@ import seaborn as sns
 from datetime import datetime
 from fpdf import FPDF
 import base64
+import os
 from io import BytesIO
+
+# Get base directory for model files (works on both local and Streamlit Cloud)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ==================== 全局特征列表 ====================
 selected_features = ['mNUTRIC_Score', 'NRS2002_Score', 'Mechanical_Ventilation', 'APACHE_II', 'BMI',
@@ -59,9 +63,9 @@ st.markdown("""
 @st.cache_resource
 def load_model():
     try:
-        with open('best_model.pkl', 'rb') as f:
+        with open(os.path.join(BASE_DIR, 'best_model.pkl'), 'rb') as f:
             model = pickle.load(f)
-        with open('scaler.pkl', 'rb') as f:
+        with open(os.path.join(BASE_DIR, 'scaler.pkl'), 'rb') as f:
             scaler = pickle.load(f)
         return model, scaler
     except:
